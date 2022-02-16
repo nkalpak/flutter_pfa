@@ -4,9 +4,45 @@ part 'product_feedback_store.g.dart';
 
 class ProductFeedbackStore = _ProductFeedbackStore with _$ProductFeedbackStore;
 
+const String allFilter = 'all';
+
+var initialData = [
+  ProductFeedback(
+      id: 1,
+      title: 'John',
+      category: 'ui',
+      status: 'planned',
+      description: 'Hello'),
+  ProductFeedback(
+      id: 1,
+      title: 'John',
+      category: 'ui',
+      status: 'live',
+      description: 'Hello'),
+  ProductFeedback(
+      id: 1,
+      title: 'John',
+      category: 'enhancement',
+      status: 'in-progress',
+      description: 'Hello'),
+  ProductFeedback(
+      id: 1,
+      title: 'John',
+      category: 'bug',
+      status: 'planned',
+      description: 'Hello'),
+  ProductFeedback(
+      id: 1,
+      title: 'John',
+      category: 'feature',
+      status: 'live',
+      description: 'Hello'),
+];
+
 abstract class _ProductFeedbackStore with Store {
   @observable
-  ObservableList<ProductFeedback> productFeedbackList = ObservableList.of([]);
+  ObservableList<ProductFeedback> productFeedbackList =
+      ObservableList.of(initialData);
 
   @observable
   ObservableList<String> categoryFilters = ObservableList.of([]);
@@ -27,10 +63,40 @@ abstract class _ProductFeedbackStore with Store {
     productFeedbackList.removeWhere((element) => element.id == id);
   }
 
+  @action
+  // The "all" filter is a special case filter which should toggle all
+  // other filters, including itself.
+  void toggleCategoryAllFilter() {
+    if (categoryFilters.contains(allFilter)) {
+      categoryFilters.removeWhere((_) => true);
+    } else {
+      categoryFilters = ObservableList.of(allCategories);
+    }
+  }
+
+  @action
+  void toggleCategoryFilter(String filter) {
+    if (filter == allFilter) {
+      return toggleCategoryAllFilter();
+    }
+
+    if (categoryFilters.contains(filter)) {
+      categoryFilters.removeWhere((cf) => cf == filter);
+    } else {
+      categoryFilters.add(filter);
+    }
+  }
+
+  @computed
+  ObservableList<String> get allCategories {
+    return ObservableList.of(
+        {allFilter, ...productFeedbackList.map((pf) => pf.category)});
+  }
+
   @computed
   ObservableList<ProductFeedback> get productFeedbackListFiltered {
-    return ObservableList.of(
-        productFeedbackList.where((pf) => categoryFilters.contains(pf.status)));
+    return ObservableList.of(productFeedbackList
+        .where((pf) => categoryFilters.contains(pf.category)));
   }
 
   @computed
@@ -38,12 +104,12 @@ abstract class _ProductFeedbackStore with Store {
     var map = <String, List<ProductFeedback>>{};
 
     for (var pf in productFeedbackList) {
-      var categoryList = map[pf.category];
+      var statusList = map[pf.status];
 
-      if (categoryList != null) {
-        categoryList.add(pf);
+      if (statusList != null) {
+        statusList.add(pf);
       } else {
-        map[pf.category] = [pf];
+        map[pf.status] = [pf];
       }
     }
 

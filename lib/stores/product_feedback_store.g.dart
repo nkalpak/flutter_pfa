@@ -9,6 +9,13 @@ part of 'product_feedback_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$ProductFeedbackStore on _ProductFeedbackStore, Store {
+  Computed<ObservableList<String>>? _$allCategoriesComputed;
+
+  @override
+  ObservableList<String> get allCategories => (_$allCategoriesComputed ??=
+          Computed<ObservableList<String>>(() => super.allCategories,
+              name: '_ProductFeedbackStore.allCategories'))
+      .value;
   Computed<ObservableList<ProductFeedback>>?
       _$productFeedbackListFilteredComputed;
 
@@ -99,10 +106,22 @@ mixin _$ProductFeedbackStore on _ProductFeedbackStore, Store {
   }
 
   @override
+  void toggleCategoryFilter(String filter) {
+    final _$actionInfo = _$_ProductFeedbackStoreActionController.startAction(
+        name: '_ProductFeedbackStore.toggleCategoryFilter');
+    try {
+      return super.toggleCategoryFilter(filter);
+    } finally {
+      _$_ProductFeedbackStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 productFeedbackList: ${productFeedbackList},
 categoryFilters: ${categoryFilters},
+allCategories: ${allCategories},
 productFeedbackListFiltered: ${productFeedbackListFiltered},
 productFeedbacksByStatus: ${productFeedbacksByStatus}
     ''';
