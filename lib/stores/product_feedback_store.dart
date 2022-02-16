@@ -9,34 +9,34 @@ const String allFilter = 'all';
 var initialData = [
   ProductFeedback(
       id: 1,
-      title: 'John',
+      title: 'Add tags for solutions',
       category: 'ui',
       status: 'planned',
-      description: 'Hello'),
+      description: 'Easier to search for solutions based on a specific stack.'),
   ProductFeedback(
       id: 1,
-      title: 'John',
+      title: 'Add a dark theme option',
       category: 'ui',
       status: 'live',
-      description: 'Hello'),
+      description: 'It would help people with light sensitivities and who prefer dark mode.'),
   ProductFeedback(
       id: 1,
-      title: 'John',
+      title: 'Q&A within the challenge hubs',
       category: 'enhancement',
       status: 'in-progress',
-      description: 'Hello'),
+      description: 'Challenge-specific Q&A would make for easy reference.'),
   ProductFeedback(
       id: 1,
-      title: 'John',
+      title: 'Allow image/video upload ',
       category: 'bug',
       status: 'planned',
-      description: 'Hello'),
+      description: 'Images and screencasts can enhance comments on solutions.'),
   ProductFeedback(
       id: 1,
-      title: 'John',
+      title: 'Ability to follow others',
       category: 'feature',
       status: 'live',
-      description: 'Hello'),
+      description: 'Stay updated on comments and solutions other people post.'),
 ];
 
 abstract class _ProductFeedbackStore with Store {
@@ -45,7 +45,7 @@ abstract class _ProductFeedbackStore with Store {
       ObservableList.of(initialData);
 
   @observable
-  ObservableList<String> categoryFilters = ObservableList.of([]);
+  ObservableList<String> categoryFilters = ObservableList.of([allFilter]);
 
   @action
   void addProductFeedback(ProductFeedback productFeedback) {
@@ -64,22 +64,7 @@ abstract class _ProductFeedbackStore with Store {
   }
 
   @action
-  // The "all" filter is a special case filter which should toggle all
-  // other filters, including itself.
-  void toggleCategoryAllFilter() {
-    if (categoryFilters.contains(allFilter)) {
-      categoryFilters.removeWhere((_) => true);
-    } else {
-      categoryFilters = ObservableList.of(allCategories);
-    }
-  }
-
-  @action
   void toggleCategoryFilter(String filter) {
-    if (filter == allFilter) {
-      return toggleCategoryAllFilter();
-    }
-
     if (categoryFilters.contains(filter)) {
       categoryFilters.removeWhere((cf) => cf == filter);
     } else {
@@ -96,7 +81,13 @@ abstract class _ProductFeedbackStore with Store {
   @computed
   ObservableList<ProductFeedback> get productFeedbackListFiltered {
     return ObservableList.of(productFeedbackList
-        .where((pf) => categoryFilters.contains(pf.category)));
+        .where((pf) {
+          if (categoryFilters.contains(allFilter)) {
+            return true;
+          }
+
+          return categoryFilters.contains(pf.category);
+        }));
   }
 
   @computed
