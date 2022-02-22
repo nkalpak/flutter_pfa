@@ -28,27 +28,27 @@ const body3Style = TextStyle(
 class PfaTypography extends StatelessWidget {
   final String text;
   final TextStyle style;
-  final Color color;
+  final Color? color;
 
-  const PfaTypography.heading1(this.text, {this.color = Colors.white})
+  const PfaTypography.heading1(this.text, {this.color})
       : style = h1Style;
 
-  const PfaTypography.heading2(this.text, {this.color = Colors.white})
+  const PfaTypography.heading2(this.text, {this.color})
       : style = h2Style;
 
-  const PfaTypography.heading3(this.text, {this.color = Colors.white})
+  const PfaTypography.heading3(this.text, {this.color})
       : style = h3Style;
 
-  const PfaTypography.heading4(this.text, {this.color = Colors.white})
+  const PfaTypography.heading4(this.text, {this.color})
       : style = h4Style;
 
-  const PfaTypography.body1(this.text, {this.color = Colors.white})
+  const PfaTypography.body1(this.text, {this.color})
       : style = body1Style;
 
-  const PfaTypography.body2(this.text, {this.color = Colors.white})
+  const PfaTypography.body2(this.text, {this.color})
       : style = body2Style;
 
-  const PfaTypography.body3(this.text, {this.color = Colors.white})
+  const PfaTypography.body3(this.text, {this.color})
       : style = body3Style;
 
   @override

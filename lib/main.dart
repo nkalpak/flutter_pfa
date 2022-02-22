@@ -1,75 +1,85 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:product_feedback_app/design_system/colors.dart';
-import 'package:product_feedback_app/stores/product_feedback_store.dart';
+import 'package:product_feedback_app/widgets/app_wrapper.dart';
+import 'package:vrouter/vrouter.dart';
 
-import 'design_system/typography.dart';
-import 'features/product_feedback.dart';
+import 'features/pages/product_feedback_create.dart';
+import 'features/pages/product_feedback_list.dart';
+import 'features/stores/product_feedback_store.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyAppWithRouter());
 }
 
 final ProductFeedbackStore productFeedbackStore = ProductFeedbackStore();
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyAppWithRouter extends StatelessWidget {
+  const MyAppWithRouter({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData(fontFamily: 'Jost'),
-        title: 'Product Feedback App',
-        home: SafeArea(
-          child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              toolbarHeight: 72,
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                  radius: 3,
-                  focal: Alignment.topLeft,
-                  colors: [PfaColors.darkBlue, PfaColors.purple],
-                )),
-              ),
-              title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const PfaTypography.heading3('Frontend Mentor'),
-                    PfaTypography.body3('Feedback Board',
-                        color: PfaColors.white.withAlpha(200))
+    return VRouter(
+      debugShowCheckedModeBanner: false,
+      routes: [
+        VNester(
+            path: '/',
+            widgetBuilder: (child) => AppWrapper(child: child),
+            nestedRoutes: [
+              VWidget(path: null, widget: const HomePage()),
+              VNester(
+                  widgetBuilder: (child) => child,
+                  path: 'product-feedback',
+                  nestedRoutes: [
+                    VWidget(
+                        path: null, widget: const ProductFeedbackListPage()),
+                    VWidget(
+                        path: 'create',
+                        widget: const ProductFeedbackCreatePage())
                   ]),
-            ),
-            endDrawer: const ProductFeedbackFilterDrawer(),
-            backgroundColor: PfaColors.neutralGrey,
-            body: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-              child: Observer(
-                builder: (_) => ListView(
-                  children: productFeedbackStore.productFeedbackListFiltered
-                      .map((pf) => ProductFeedbackCard(
-                          title: pf.title,
-                          description: pf.description,
-                          categoryLabel: pf.category.toCapitalized()))
-                      .toList(),
-                ),
-              ),
-            ),
-            bottomNavigationBar: BottomAppBar(
-              shape: const CircularNotchedRectangle(),
-              child: Container(
-                height: 50,
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-              child: const Icon(Icons.add),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-          ),
-        ));
+            ]),
+      ],
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                context.vRouter.to('/product-feedback');
+              },
+              child: Text('Go to feedbacks')),
+          ElevatedButton(
+              onPressed: () {
+                context.vRouter.to('/details');
+              },
+              child: Text('Go to details')),
+        ],
+      ),
+    );
+  }
+}
+
+class DetailsPage extends StatelessWidget {
+  const DetailsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          context.vRouter.to('/');
+        },
+        child: Text('Press me'),
+      ),
+    );
   }
 }
 

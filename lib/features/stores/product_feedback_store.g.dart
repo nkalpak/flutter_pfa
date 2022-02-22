@@ -73,7 +73,7 @@ mixin _$ProductFeedbackStore on _ProductFeedbackStore, Store {
       ActionController(name: '_ProductFeedbackStore');
 
   @override
-  void addProductFeedback(ProductFeedback productFeedback) {
+  void addProductFeedback(ProductFeedbackBase productFeedback) {
     final _$actionInfo = _$_ProductFeedbackStoreActionController.startAction(
         name: '_ProductFeedbackStore.addProductFeedback');
     try {

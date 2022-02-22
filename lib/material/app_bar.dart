@@ -14,7 +14,7 @@ var pfaAppBar = AppBar(
     )),
   ),
   title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    const PfaTypography.heading3('Frontend Mentor'),
+    PfaTypography.heading3('Frontend Mentor'),
     PfaTypography.body3('Feedback Board', color: PfaColors.white.withAlpha(200))
   ]),
 );

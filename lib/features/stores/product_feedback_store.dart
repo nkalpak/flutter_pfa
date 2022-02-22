@@ -12,27 +12,33 @@ var initialData = [
       title: 'Add tags for solutions',
       category: 'ui',
       status: 'planned',
-      description: 'Easier to search for solutions based on a specific stack.'),
+      description: 'Easier to search for solutions based on a specific stack.',
+      dateCreated: DateTime.now().toIso8601String()),
   ProductFeedback(
-      id: 1,
+      dateCreated: DateTime.now().toIso8601String(),
+      id: 2,
       title: 'Add a dark theme option',
       category: 'ui',
       status: 'live',
-      description: 'It would help people with light sensitivities and who prefer dark mode.'),
+      description:
+          'It would help people with light sensitivities and who prefer dark mode.'),
   ProductFeedback(
-      id: 1,
+      dateCreated: DateTime.now().toIso8601String(),
+      id: 3,
       title: 'Q&A within the challenge hubs',
       category: 'enhancement',
       status: 'in-progress',
       description: 'Challenge-specific Q&A would make for easy reference.'),
   ProductFeedback(
-      id: 1,
+      dateCreated: DateTime.now().toIso8601String(),
+      id: 4,
       title: 'Allow image/video upload ',
       category: 'bug',
       status: 'planned',
       description: 'Images and screencasts can enhance comments on solutions.'),
   ProductFeedback(
-      id: 1,
+      dateCreated: DateTime.now().toIso8601String(),
+      id: 5,
       title: 'Ability to follow others',
       category: 'feature',
       status: 'live',
@@ -48,8 +54,21 @@ abstract class _ProductFeedbackStore with Store {
   ObservableList<String> categoryFilters = ObservableList.of([allFilter]);
 
   @action
-  void addProductFeedback(ProductFeedback productFeedback) {
-    productFeedbackList.add(productFeedback);
+  void addProductFeedback(ProductFeedbackBase productFeedback) {
+    var productFeedbackByIdAscending = productFeedbackList.toList();
+    productFeedbackByIdAscending.sort(
+      (a, b) {
+        return a.id - b.id;
+      },
+    );
+
+    productFeedbackList.add(ProductFeedback(
+        id: productFeedbackByIdAscending.last.id + 1,
+        title: productFeedback.title,
+        category: productFeedback.category,
+        status: 'planned',
+        description: productFeedback.description,
+        dateCreated: DateTime.now().toIso8601String()));
   }
 
   @action
@@ -80,14 +99,22 @@ abstract class _ProductFeedbackStore with Store {
 
   @computed
   ObservableList<ProductFeedback> get productFeedbackListFiltered {
-    return ObservableList.of(productFeedbackList
-        .where((pf) {
-          if (categoryFilters.contains(allFilter)) {
-            return true;
-          }
+    var list = ObservableList.of(productFeedbackList.where((pf) {
+      if (categoryFilters.contains(allFilter)) {
+        return true;
+      }
 
-          return categoryFilters.contains(pf.category);
-        }));
+      return categoryFilters.contains(pf.category);
+    }));
+
+    list.sort((a, b) {
+      return DateTime.parse(a.dateCreated)
+              .isBefore(DateTime.parse(b.dateCreated))
+          ? 1
+          : -1;
+    });
+
+    return list;
   }
 
   @computed
@@ -108,17 +135,26 @@ abstract class _ProductFeedbackStore with Store {
   }
 }
 
-class ProductFeedback {
-  final int id;
+class ProductFeedbackBase {
   String title;
   String category;
-  String status;
   String description;
 
-  ProductFeedback(
-      {required this.id,
-      required this.title,
-      required this.category,
-      required this.status,
-      required this.description});
+  ProductFeedbackBase(
+      {required this.title, required this.category, required this.description});
+}
+
+class ProductFeedback extends ProductFeedbackBase {
+  final int id;
+  String status;
+  String dateCreated;
+
+  ProductFeedback({
+    required this.id,
+    required this.status,
+    required this.dateCreated,
+    required String title,
+    required String category,
+    required String description,
+  }) : super(title: title, category: category, description: description);
 }
